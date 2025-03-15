@@ -44,12 +44,20 @@ sudo docker build -t remind0 .
 5. Run the container with the required token
 
 ```
-sudo docker run -d -e TELEGRAM_BOT_TOKEN=<replace_token_value> --name expenses-telegram-bot --restart=always remind0
+
+docker run -d \
+ -e TELEGRAM_BOT_TOKEN=<tg_api_token> \
+ -e ENV=production \
+ --name expenses-telegram-bot \
+ remind0
+
 ```
 
 ## Additional
 
 ```
-docker pull ubuntu:22.04
+
+docker pull alpine:3.19
 docker pull golang:1.24
+
 ```

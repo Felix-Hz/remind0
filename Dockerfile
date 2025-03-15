@@ -4,31 +4,39 @@
 
 FROM golang:1.24 AS builder
 
-# Set the Current Working Directory inside the container
+# Install musl-tools (includes musl-gcc)
+RUN apt-get update && apt-get install -y musl-tools
+
 WORKDIR /app
 
-# Copy go.mod and go.sum files to cache dependencies
 COPY go.mod go.sum ./
-
-# Download deps
 RUN go mod tidy
 
 COPY . .
 
-RUN go build -o main .
+# Set up musl-gcc as the compiler required for the alpine image
+ENV CC=musl-gcc
+
+# Build the app with a statically linked binary
+RUN CGO_ENABLED=1 GOOS=linux go build -o main .
+RUN ls -l /app
+
 
 #
 # Stage 2: Create a smaller image to run the application
 #
 
-FROM ubuntu:22.04
+FROM alpine:3.19 AS runner
 
 # Set the working directory in the new container
 WORKDIR /root/
 
-ENV TELEGRAM_BOT_TOKEN=${TELEGRAM_BOT_TOKEN}
+RUN apk add --no-cache ca-certificates
 
-# Copy the binary from the builder stage
 COPY --from=builder /app/main .
+
+# Set environment variables
+ENV ENV=${ENV}
+ENV TELEGRAM_BOT_TOKEN=${TELEGRAM_BOT_TOKEN}
 
 CMD ["./main"]
