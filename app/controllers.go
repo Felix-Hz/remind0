@@ -77,24 +77,25 @@ func HandleTelegramMessage(bot *telegramClient.BotAPI, update telegramClient.Upd
 			return
 		}
 
-		// TODO - Refactor to handle different command success messages.
-		msg := "✅ Command executed successfully."
-		if tx := r.Transaction; tx != nil {
-			// Only removals are implemented so far.
-			msg = successMessage(false, tx.ID, tx.Category, tx.Amount, tx.Notes, tx.Timestamp)
-		}
-
-		bot.Send(telegramClient.NewMessage(tgUserID, msg))
+		bot.Send(telegramClient.NewMessage(tgUserID, generateSuccessMessage(r)))
 		return
 	}
 
 	/**
-	 * Process incoming message.
+	 * If it doesn't have a shebang but it's valid, treat the message as an add transaction request.
+	 * This is because I like the simplicity of being able to do: $ 45
+	 * Design-wise, it's crap? I'll potentially encapsulate it in an explicit command later.
+	 * But who cares. Do I? I don't know.
 	 */
-	category, amount, notes, parseErr := processTx(body)
-	if parseErr != nil {
-		log.Printf("⚠️ Error parsing message: %s", parseErr)
-		bot.Send(telegramClient.NewMessage(tgUserID, invalidMessageError()))
+	cmd := Add
+
+	/**
+	 * Process incoming add-request message.
+	 */
+	category, amount, notes, err := parseAddTx(body)
+	if err != nil {
+		log.Printf("⚠️ Error parsing message: %s", err)
+		bot.Send(telegramClient.NewMessage(tgUserID, userErrors[cmd]))
 		return
 	}
 
@@ -109,14 +110,15 @@ func HandleTelegramMessage(bot *telegramClient.BotAPI, update telegramClient.Upd
 	var existingExpense Transaction
 	result = DBClient.Where("hash = ?", hash).First(&existingExpense)
 	if result.Error == nil {
-		bot.Send(telegramClient.NewMessage(tgUserID, "⚠️ This expense was already recorded."))
+		log.Printf("⚠️ This expense was already recorded.")
+		bot.Send(telegramClient.NewMessage(tgUserID, userErrors[Unknown]))
 		return
 	}
 
 	/**
 	 * Persist transaction
 	 */
-	expense := Transaction{
+	tx := Transaction{
 		UserID:    user.ID,
 		Category:  category,
 		Amount:    amount,
@@ -125,17 +127,18 @@ func HandleTelegramMessage(bot *telegramClient.BotAPI, update telegramClient.Upd
 		Hash:      hash,
 	}
 
-	createTx := DBClient.Create(&expense)
-	if createTx.Error != nil {
-		log.Printf("⚠️ Error creating transaction: %s", createTx.Error)
-		bot.Send(telegramClient.NewMessage(tgUserID, "⚠️ Failed to record expense. Please try again later."))
+	createOperation := DBClient.Create(&tx)
+	if createOperation.Error != nil {
+		log.Printf("⚠️ Error creating transaction: %s", createOperation.Error)
+		bot.Send(telegramClient.NewMessage(tgUserID, userErrors[Unknown]))
 		return
 	}
 
 	/**
 	 * Send confirmation message to user.
 	 */
-	bot.Send(telegramClient.NewMessage(tgUserID, successMessage(true, expense.ID, category, amount, notes, timestamp)))
+	msg := generateSuccessMessage(CommandResult{Command: cmd, Transaction: &tx})
+	bot.Send(telegramClient.NewMessage(tgUserID, msg))
 
-	log.Printf("✅ Expense recorded: %+v", expense)
+	log.Printf("✅ Expense recorded: %+v", tx)
 }

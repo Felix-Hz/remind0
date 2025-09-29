@@ -1,11 +1,12 @@
 package app
 
 import (
+	"strconv"
+	"strings"
+
 	"crypto/sha256"
 	"encoding/hex"
 	"fmt"
-	"strconv"
-	"strings"
 	"time"
 )
 
@@ -81,50 +82,6 @@ func generateMessageHash(msg string, timestamp time.Time) string {
 	return hex.EncodeToString(hashBytes)
 }
 
-/**
- * Format a return message to inform the user of a successful operation.
- */
-func successMessage(recorded bool, id uint, category string, amount float64, notes string, timestamp time.Time) string {
-	operation := "✅ Expense Recorded"
-	if !recorded {
-		operation = "✂️ Expense Deleted"
-	}
-	return fmt.Sprintf(
-		"%s \n"+
-			"════════════\n"+
-			"🪪 ID: %d\n"+
-			"📥 Category: %s\n"+
-			"💰 Amount: $%.2f\n"+
-			"📌 Notes: %s\n"+
-			"🕒 At: %s\n"+
-			"════════════",
-		operation, id, category, amount, notes, timestamp.Format("02-Jan-2006 15:04"),
-	)
-}
-
-/**
- * Format a return message to inform the user of the correct format.
- */
-func invalidMessageError() string {
-	var categoryList string
-	for _, cat := range validCategories {
-		categoryList += fmt.Sprintf("• %s (%s)\n", cat.Alias, cat.Name)
-	}
-	return fmt.Sprintf(
-		"⚠️ Invalid Message Format\n"+
-			"════════════\n\n"+
-			"📝 Expected Format:\n"+
-			"• <category> <amount> <notes?>\n\n"+
-			"💡 Example:\n"+
-			"• G 45 Woolworths\n"+
-			"• + 90 Salary\n\n"+
-			"✅ Valid Categories:\n"+
-			"%s"+
-			"════════════\n",
-		categoryList,
-	)
-}
-
 /*   dP                                                    dP  oo                          */
 /*   88                                                    88                              */
 /* d8888P88d888b..d8888b.88d888b..d8888b..d8888b..d8888b.d8888PdP.d8888b.88d888b..d8888b.  */
@@ -136,7 +93,7 @@ func invalidMessageError() string {
 /**
  * Validate and process an add transaction message.
  */
-func processTx(msg string) (string, float64, string, error) {
+func parseAddTx(msg string) (string, float64, string, error) {
 
 	/**
 	 * Split the message into parts divided by spaces,

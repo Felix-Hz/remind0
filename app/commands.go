@@ -11,6 +11,7 @@ import (
 type Command string
 
 const (
+	Add     Command = "add"
 	Remove  Command = "rm"
 	Unknown Command = "unknown"
 	List    Command = "ls"
@@ -29,6 +30,8 @@ type CommandResult struct {
  * User-friendly error messages.
  */
 var userErrors = map[Command]string{
+	Add: addMessageError(),
+
 	Remove:  "Please use the format: !rm <transaction_id>",
 	Unknown: "Something went wrong, please try again later.",
 	List:    "Listing transactions is not implemented yet.",
