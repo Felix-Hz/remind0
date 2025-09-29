@@ -1,7 +1,9 @@
 package app
 
 import (
+	"fmt"
 	"log"
+	"strings"
 	"time"
 
 	. "remind0/db"
@@ -65,20 +67,24 @@ func HandleTelegramMessage(bot *telegramClient.BotAPI, update telegramClient.Upd
 	}
 
 	/**
-	 * An exclamation mark indicates a user's wish to negate a transaction.
-	 * Usability might change in the future to support more complex commands.
-	 * For now, it's a simple delete by transaction ID.
+	 * An exclamation mark indicates a user's wish to interact with the system.
 	 */
-	if cmd := body[0]; cmd == '!' {
-		tx, err := removeTx(body, user.ID)
-		if err != nil {
-			log.Printf("⚠️ Error parsing remove message: %s", err)
-			bot.Send(telegramClient.NewMessage(tgUserID, "⚠️ Failed to remove transaction. Please use the format: !<transaction_id>"))
+	if strings.HasPrefix(body, "!") {
+		r := dispatch(strings.TrimPrefix(body, "!"), user.ID)
+		if r.Error != nil {
+			log.Printf("⚠️ Error processing command: %s", r.Error)
+			bot.Send(telegramClient.NewMessage(tgUserID, fmt.Sprintf("⚠️ Failed to process command: %s", r.UserError)))
 			return
 		}
 
-		log.Printf("✅ Deleted transaction %d (user=%d)", tx.ID, tgUserID)
-		bot.Send(telegramClient.NewMessage(tgUserID, successMessage(false, tx.ID, tx.Category, tx.Amount, tx.Notes, tx.Timestamp)))
+		// TODO - Refactor to handle different command success messages.
+		msg := "✅ Command executed successfully."
+		if tx := r.Transaction; tx != nil {
+			// Only removals are implemented so far.
+			msg = successMessage(false, tx.ID, tx.Category, tx.Amount, tx.Notes, tx.Timestamp)
+		}
+
+		bot.Send(telegramClient.NewMessage(tgUserID, msg))
 		return
 	}
 

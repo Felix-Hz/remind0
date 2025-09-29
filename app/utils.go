@@ -133,44 +133,6 @@ func invalidMessageError() string {
 /*   dP  dP      `88888P8dP    dP`88888P'`88888P8`88888P'  dP  dP`88888P'dP    dP`88888P'  */
 /* ooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooo */
 
-func removeTx(msg string, userId uint) (Transaction, error) {
-	/**
-	 * Negation command must have an ID following the exclamation mark.
-	 */
-	if len(msg) <= 1 {
-		return Transaction{}, fmt.Errorf("must indicate transaction ID")
-	}
-
-	strId := msg[1:]
-
-	/**
-	 * Validate and convert txId to int64
-	 */
-	id, err := strconv.ParseInt(strId, 10, 64)
-	if err != nil {
-		return Transaction{}, fmt.Errorf("ID must be a number")
-	}
-
-	/**
-	 * Verify the transaction exists
-	 */
-	var tx Transaction
-	result := DBClient.Where("id = ? AND user_id = ?", id, userId).First(&tx)
-	if result.Error != nil {
-		return Transaction{}, fmt.Errorf("ID %s not found: %s", strId, result.Error)
-	}
-
-	/**
-	 * Delete the transaction
-	 */
-	delete := DBClient.Delete(&tx)
-	if delete.Error != nil || delete.RowsAffected == 0 {
-		return Transaction{}, fmt.Errorf("failed to delete ID %s: %s", strId, delete.Error)
-	}
-
-	return tx, nil
-}
-
 /**
  * Validate and process an add transaction message.
  */
