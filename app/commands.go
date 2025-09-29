@@ -81,7 +81,7 @@ func remove(strId string, userId uint) CommandResult {
 	 */
 	delete := DBClient.Delete(&tx)
 	if delete.Error != nil || delete.RowsAffected == 0 {
-		return CommandResult{Command: cmd, Transaction: &tx, Error: fmt.Errorf("failed to delete ID %s: %s", strId, delete.Error), UserError: userErrors[Unknown]}
+		return CommandResult{Command: cmd, Error: fmt.Errorf("failed to delete ID %s: %s", strId, delete.Error), UserError: userErrors[Unknown]}
 	}
 
 	log.Printf("✅ Deleted transaction %d (user=%d)", tx.ID, userId)
