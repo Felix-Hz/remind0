@@ -19,7 +19,8 @@ var operationHeaders = map[Command]string{
 func generateSuccessMessage(r CommandResult) string {
 	msg := "✅ Command executed successfully."
 
-	if tx := r.Transaction; tx != nil {
+	// TODO Support multiple transactions in the result.
+	if tx := r.Transactions[0]; tx != nil {
 		msg = txSuccessMessage(r.Command, tx.ID, tx.Category, tx.Amount, tx.Notes, tx.Timestamp)
 	}
 
