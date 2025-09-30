@@ -26,16 +26,20 @@ func (r *userRepository) GetOrCreate(userId int64, sender *telegramClient.User) 
 	var user User
 	result := r.dbClient.Where("user_id = ?", userId).First(&user)
 	if result.Error != nil {
-		user = User{
-			UserID:    userId,
-			Username:  sender.UserName,
-			FirstName: sender.FirstName,
-			LastName:  sender.LastName,
+		if result.Error == gorm.ErrRecordNotFound {
+			user = User{
+				UserID:    userId,
+				Username:  sender.UserName,
+				FirstName: sender.FirstName,
+				LastName:  sender.LastName,
+			}
+			if err := r.dbClient.Create(&user).Error; err != nil {
+				return nil, err
+			}
+			log.Printf("✅ Created new user: %s (%d)", user.FirstName+" "+user.LastName, user.UserID)
+		} else {
+			return nil, result.Error
 		}
-		if err := r.dbClient.Create(&user).Error; err != nil {
-			return nil, err
-		}
-		log.Printf("✅ Created new user: %s (%d)", user.FirstName+" "+user.LastName, user.UserID)
 	}
 	return &user, nil
 }
