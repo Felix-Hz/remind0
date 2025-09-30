@@ -2,12 +2,14 @@ package repository
 
 import "gorm.io/gorm"
 
-var (
+type Repositories struct {
 	UserRepo   IUserRepository
 	OffsetRepo IOffsetRepository
-)
+}
 
-func InitRepositories(db *gorm.DB) {
-	UserRepo = UserRepositoryImpl(db)
-	OffsetRepo = OffsetRepositoryImpl(db)
+func InitRepositories(db *gorm.DB) *Repositories {
+	return &Repositories{
+		UserRepo:   UserRepositoryImpl(db),
+		OffsetRepo: OffsetRepositoryImpl(db),
+	}
 }
