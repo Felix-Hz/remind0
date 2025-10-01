@@ -102,7 +102,7 @@ func stringToFloat(amountStr string) (float64, error) {
 func processBatchAmounts(amountsStr string) ([]float64, error) {
 	var amounts []float64
 
-	for amt := range strings.SplitSeq(amountsStr, ",") {
+	for amt := range strings.SplitSeq(amountsStr, "-") {
 		amount, err := stringToFloat(amt)
 		if err != nil {
 			return nil, err

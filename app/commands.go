@@ -125,11 +125,12 @@ func add(body string, timestamp time.Time, userId uint) CommandResult {
 		}
 
 		_txs = append(_txs, &Transaction{
-			Hash:     hash,
-			Notes:    notes,
-			UserID:   userId,
-			Amount:   amount,
-			Category: category,
+			Hash:      hash,
+			Notes:     notes,
+			UserID:    userId,
+			Amount:    amount,
+			Category:  category,
+			Timestamp: timestamp,
 		})
 	}
 
