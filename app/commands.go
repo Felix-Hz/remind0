@@ -90,7 +90,7 @@ func remove(strIds []string, userId uint) CommandResult {
 	 * Delete the transaction
 	 */
 	if err := r.Delete(txs); err != nil {
-		return CommandResult{Command: Remove, Error: fmt.Errorf("failed to delete IDs %v: %s", ids, err), UserError: userErrors[Remove]}
+		return CommandResult{Command: Remove, Error: fmt.Errorf("failed to delete IDs %v: %s", ids, err), UserError: userErrors[Unknown]}
 	}
 
 	return CommandResult{Transactions: txs, Command: Remove, Error: nil}
