@@ -231,17 +231,6 @@ type ListOptions struct {
 	Limit     int
 }
 
-func validateLimit(limit string) (int, error) {
-	n, err := strconv.Atoi(limit)
-	if err != nil {
-		return 0, err
-	}
-	if n <= 0 || n > 50 {
-		return 0, fmt.Errorf("limit must be between 1 and 50")
-	}
-	return n, nil
-}
-
 func parseListOptions(args []string, timestamp time.Time) (ListOptions, error) {
 
 	// Date format: DD/MM/YYYY
@@ -357,6 +346,17 @@ func parseListOptions(args []string, timestamp time.Time) (ListOptions, error) {
 	}
 
 	return opts, fmt.Errorf("invalid arguments")
+}
+
+func validateLimit(limit string) (int, error) {
+	n, err := strconv.Atoi(limit)
+	if err != nil {
+		return 0, err
+	}
+	if n <= 0 || n > 50 {
+		return 0, fmt.Errorf("limit must be between 1 and 50")
+	}
+	return n, nil
 }
 
 //  _____ _  _      _____

@@ -83,7 +83,7 @@ func remove(strIds []string, userId uint) CommandResult {
 	 */
 	txs, err := r.GetManyById(ids, userId)
 	if err != nil {
-		return CommandResult{Command: Remove, Error: fmt.Errorf("IDs %v not found: %s", ids, err), UserError: userErrors[Remove]}
+		return CommandResult{Command: Remove, Error: fmt.Errorf("IDs %v not found: %s", ids, err), UserError: userErrors[Unknown]}
 	}
 
 	/**
@@ -155,7 +155,6 @@ func list(body []string, timestamp time.Time, userId uint) CommandResult {
 		}
 	}
 
-	// If category specified, use category-specific query
 	if opts.Category != "" {
 		txs, err := r.GetManyByCategory(userId, opts.Category, opts.FromTime, opts.Limit)
 		if err != nil {
@@ -171,7 +170,6 @@ func list(body []string, timestamp time.Time, userId uint) CommandResult {
 		return CommandResult{Command: List, Aggregated: aggregateCategories(txs)}
 	}
 
-	// Otherwise use general query
 	txs, err := r.GetAll(userId, opts.FromTime, opts.Limit)
 	if err != nil {
 		return CommandResult{
