@@ -174,7 +174,7 @@ func parseAddTx(msg string) (string, []float64, string, error) {
 	 */
 	parts := strings.Fields(msg)
 	if len(parts) < 2 {
-		return "", []float64{0}, "", fmt.Errorf("invalid message format")
+		return "", nil, "", fmt.Errorf("invalid message format")
 	}
 
 	category := parts[0]
@@ -185,7 +185,7 @@ func parseAddTx(msg string) (string, []float64, string, error) {
 	if categoryName, exists := findCategory(category); exists {
 		category = categoryName
 	} else {
-		return "", []float64{0}, "", fmt.Errorf("invalid category alias")
+		return "", nil, "", fmt.Errorf("invalid category alias")
 	}
 
 	/**
@@ -193,12 +193,12 @@ func parseAddTx(msg string) (string, []float64, string, error) {
 	 */
 	amounts, err := parseAmounts(parts[1])
 	if err != nil {
-		return "", []float64{0}, "", fmt.Errorf("failed to parse amount %q: %w", parts[1], err)
+		return "", nil, "", fmt.Errorf("failed to parse amount %q: %w", parts[1], err)
 	}
 
 	// At least one valid amount is required
 	if len(amounts) == 0 {
-		return "", []float64{0}, "", fmt.Errorf("no valid amounts found")
+		return "", nil, "", fmt.Errorf("no valid amounts found")
 	}
 
 	/**
