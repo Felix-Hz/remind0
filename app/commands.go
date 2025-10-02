@@ -35,7 +35,7 @@ var userErrors = map[Command]string{
 	Add: addMessageError(),
 
 	Remove:  "Please use the format: !rm <required IDs separated by space>",
-	List:    "Please use the format: !ls <optional category> <optional * for all time> <optional date DD/MM/YYYY>",
+	List:    "Please use the format: !ls <optional category> <optional * for aggregation> <optional date DD/MM/YYYY> <optional number for limit>",
 	Help:    "Help command is not implemented yet.",
 	Edit:    "Editing transactions is not implemented yet.",
 	Unknown: "Something went wrong, please try again later.",
