@@ -34,17 +34,15 @@ type CommandResult struct {
 var userErrors = map[Command]string{
 	Add: addMessageError(),
 
-	Remove: `\n
-	Remove transactions: !rm [transaction IDs]
+	Remove: `Remove transactions: !rm [transaction IDs]
 		Usage:
-			!rm <ID1> <ID2> ...  - Remove one or more transactions by ID
+			!rm <ID1> <ID2> ...: Remove one or more transactions by ID
 		Examples:
-			!rm 42              - Remove transaction #42
-			!rm 42 43 44       - Remove multiple transactions
+			!rm 42 (Remove transaction #42)
+			!rm 42 43 44 (Remove multiple transactions)
 		Note: IDs can be found using the !ls command
 	`,
-	List: `\n
-	List transactions: !ls [options]
+	List: `List transactions: !ls [options]
 		Options (any order):
 				<category>: Filter by category alias (G, T, U, etc.)
 				<DD/MM/YYYY>: From specific date
