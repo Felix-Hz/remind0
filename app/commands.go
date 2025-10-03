@@ -51,7 +51,7 @@ var userErrors = map[Command]string{
 				*: Show all-time transactions
 		Examples:
 			!ls (Last 10 transactions this cycle)
-			!ls (All Groceries transactions)
+			!ls G (All Groceries transactions)
 			!ls + 20 (Last 20 transactions grouped by category)
 	`,
 	Help:    "Help command is not implemented yet.",
