@@ -126,7 +126,7 @@ Usage:
 
 Examples:
 	!add G 45 Woolworths ($45 Groceries)
-	!add G (2.5-8) Farmers market ($2.5 and $8 Groceries )
+	!add G (2.5-8) Farmers market ($2.5 and $8 Groceries)
 
 Note: Categories are case-insensitive and can be found using the command !help categories
 	`,
