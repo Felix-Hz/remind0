@@ -112,7 +112,7 @@ type HelpTopic struct {
 }
 
 // Prevent from running on every map access.
-var categoriesHelpMessage = "Currently supported categories:\n" + getCategoriesMessage()
+var categoriesHelpMessage = "Currently supported categories:\n\n" + getCategoriesMessage()
 
 /**
  * Detailed help messages for each command.
