@@ -114,7 +114,7 @@ func remove(strIds []string, userId uint) CommandResult {
 	 * Verify the transaction exists
 	 */
 	txs, err := r.TxRepo().GetManyById(ids, userId)
-	if err != nil {
+	if len(txs) == 0 || err != nil {
 		return CommandResult{Command: Remove, Error: fmt.Errorf("IDs %v not found: %s", ids, err), UserError: userErrors[Remove]}
 	}
 
