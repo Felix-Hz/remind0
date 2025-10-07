@@ -111,6 +111,9 @@ type HelpTopic struct {
 	Subtopic string
 }
 
+// Prevent from running on every map access.
+var categoriesHelpMessage = "Currently supported categories:\n" + getCategoriesMessage()
+
 /**
  * Detailed help messages for each command.
  */
@@ -180,5 +183,5 @@ Additional Help:
 	• Type !help <command> for detailed usage
 	• Type !help categories for category list
 	`,
-	{Command: Help, Subtopic: "Categories"}: "Currently supported categories:\n" + getCategoriesMessage(),
+	{Command: Help, Subtopic: "Categories"}: categoriesHelpMessage,
 }
